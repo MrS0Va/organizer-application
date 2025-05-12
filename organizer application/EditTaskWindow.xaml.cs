@@ -1,6 +1,7 @@
 ﻿using organizer_application.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,35 +18,60 @@ namespace organizer_application
 {
     public partial class EditTaskWindow : Window
     {
-        public event EventHandler<TaskModel> TaskEdited;
+        public event EventHandler TaskEdited;
         private TaskModel _task;
 
         public EditTaskWindow(TaskModel task)
         {
             InitializeComponent();
             _task = task;
-            LoadTaskDetails();
-        }
 
-        private void LoadTaskDetails()
-        {
+            // Заполнение полей данными задачи
             TitleTextBox.Text = _task.Title;
             DescriptionTextBox.Text = _task.Description;
             DueDatePicker.SelectedDate = _task.DueDate;
-            PriorityComboBox.SelectedItem = PriorityComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(item => item.Content.ToString() == _task.Priority);
+            PriorityComboBox.SelectedItem = PriorityComboBox.Items
+                .Cast<ComboBoxItem>()
+                .FirstOrDefault(item => item.Content.ToString() == _task.Priority);
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(TitleTextBox.Text) || DueDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Пожалуйста, заполните обязательные поля.");
+                return;
+            }
+
+            // Обновление данных задачи
             _task.Title = TitleTextBox.Text;
             _task.Description = DescriptionTextBox.Text;
             _task.DueDate = DueDatePicker.SelectedDate.Value;
             _task.Priority = (PriorityComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            // Код для обновления задачи в базе данных
+            try
+            {
+                using (SqlConnection connection = DataBaseConnect.GetConnection())
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(
+                        "UPDATE Tasks SET Title = @Title, Description = @Description, DueDate = @DueDate, Priority = @Priority WHERE Id = @Id",
+                        connection);
+                    command.Parameters.AddWithValue("@Title", _task.Title);
+                    command.Parameters.AddWithValue("@Description", (object)_task.Description ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@DueDate", _task.DueDate);
+                    command.Parameters.AddWithValue("@Priority", _task.Priority);
+                    command.Parameters.AddWithValue("@Id", _task.Id);
+                    command.ExecuteNonQuery();
+                }
 
-            TaskEdited?.Invoke(this, _task);
-            Close();
+                TaskEdited?.Invoke(this, EventArgs.Empty);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при редактировании задачи: " + ex.Message);
+            }
         }
     }
 }
