@@ -6,7 +6,17 @@
         xmlns:local="clr-namespace:organizer_application"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListBox x:Name="TasksListBox" Grid.Row="0" Margin="0,0,0,10" DisplayMemberPath="ToString" SelectionMode="Single"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Добавить задачу" Width="100" Click="AddTaskButton_Click"/>
+            <Button Content="Редактировать задачу" Width="130" Click="EditTaskButton_Click"/>
+            <Button Content="Удалить задачу" Width="100" Click="DeleteTaskButton_Click"/>
+        </StackPanel>
     </Grid>
 </Window>

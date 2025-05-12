@@ -1,0 +1,22 @@
+﻿<Window x:Class="organizer_application.AddTaskWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:organizer_application"
+        mc:Ignorable="d"
+       Title="Добавить задачу" Height="300" Width="400">
+    <Grid>
+        <StackPanel>
+            <TextBox x:Name="TitleTextBox" Text="Название задачи"/>
+            <TextBox x:Name="DescriptionTextBox" Text="Описание задачи"/>
+            <DatePicker x:Name="DueDatePicker" />
+            <ComboBox x:Name="PriorityComboBox">
+                <ComboBoxItem Content="Высокий" />
+                <ComboBoxItem Content="Средний" />
+                <ComboBoxItem Content="Низкий" />
+            </ComboBox>
+            <Button Content="Сохранить" Click="SaveButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
