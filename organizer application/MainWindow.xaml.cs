@@ -1,4 +1,5 @@
-﻿using organizer_application.Models;
+﻿using organizer_application.Controls;
+using organizer_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -22,97 +23,23 @@ namespace organizer_application
         public MainWindow()
         {
             InitializeComponent();
-            LoadTasks();
+            LoadLoginControl();
         }
-
-        // Загрузка задач из БД и отображение в списке
-        private void LoadTasks()
+        public void LoadLoginControl()
         {
-            TasksListBox.Items.Clear();
-
-            try
-            {
-                using (SqlConnection connection = DataBaseConnect.GetConnection())
-                {
-                    connection.Open();
-                    SqlCommand command = new SqlCommand("SELECT * FROM Tasks ORDER BY DueDate ASC", connection);
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            TaskModel task = new TaskModel
-                            {
-                                Id = (int)reader["Id"],
-                                Title = reader["Title"] as string,
-                                Description = reader["Description"] as string,
-                                DueDate = (DateTime)reader["DueDate"],
-                                Priority = reader["Priority"] as string,
-                                Category = reader["Category"] as string,
-                                IsCompleted = (bool)reader["IsCompleted"]
-                            };
-                            TasksListBox.Items.Add(task);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка при загрузке задач: " + ex.Message);
-            }
+            MainContent.Content = new LoginControl();
         }
-
-        // Открываем окно добавления задачи
-        private void AddTaskButton_Click(object sender, RoutedEventArgs e)
+        public void LoadRegisterControl()
         {
-            var addWindow = new AddTaskWindow();
-            addWindow.TaskAdded += (s, eArgs) => LoadTasks();
-            addWindow.ShowDialog();
+            MainContent.Content = new RegisterControl();
         }
-
-        // Открываем окно редактирования выбранной задачи
-        private void EditTaskButton_Click(object sender, RoutedEventArgs e)
+        private void LoginBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (TasksListBox.SelectedItem is TaskModel selectedTask)
-            {
-                var editWindow = new EditTaskWindow(selectedTask);
-                editWindow.TaskEdited += (s, eArgs) => LoadTasks();
-                editWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("Пожалуйста, выберите задачу для редактирования.");
-            }
+            LoadLoginControl();
         }
-
-        // Удаление выбранной задачи
-        private void DeleteTaskButton_Click(object sender, RoutedEventArgs e)
+        private void RegisterBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (TasksListBox.SelectedItem is TaskModel selectedTask)
-            {
-                var result = MessageBox.Show($"Удалить задачу: \"{selectedTask.Title}\"?", "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        using (SqlConnection connection = DataBaseConnect.GetConnection())
-                        {
-                            connection.Open();
-                            SqlCommand command = new SqlCommand("DELETE FROM Tasks WHERE Id = @Id", connection);
-                            command.Parameters.AddWithValue("@Id", selectedTask.Id);
-                            command.ExecuteNonQuery();
-                        }
-                        LoadTasks();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Ошибка при удалении задачи: " + ex.Message);
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Пожалуйста, выберите задачу для удаления.");
-            }
+            LoadRegisterControl();
         }
     }
 }

@@ -8,10 +8,13 @@ using System.Windows;
 
 namespace organizer_application
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
+    
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            ThemeManager.CurrentThemeUri = ThemeManager.LightThemeUri; // Установите начальную тему
+        }
     }
 }
