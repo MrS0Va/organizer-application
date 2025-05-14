@@ -14,7 +14,7 @@ namespace organizer_application.Models
         public DateTime DueDate { get; set; } // Дата и время выполнения задачи
         public string Priority { get; set; } // Приоритет задачи (высокий, средний, низкий)
         public string Category { get; set; } // Категория задачи
-        public bool IsCompleted { get; set; } // Статус выполнения задачи (выполнена или нет)
+        public string Status { get; set; } // Новое свойство для статуса задачи
         public override string ToString()
         {
             // Для отображения в списке: название, дата и приоритет

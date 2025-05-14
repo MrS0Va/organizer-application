@@ -1,24 +1,15 @@
 ﻿using organizer_application.Models;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace organizer_application
 {
     public partial class TodoApp : Window
     {
         private ThemeViewModel _themeViewModel;
+
         public TodoApp()
         {
             InitializeComponent();
@@ -36,7 +27,7 @@ namespace organizer_application
 
         private void LoadTasks()
         {
-            TasksListBox.Items.Clear();
+            TasksDataGrid.Items.Clear();
 
             try
             {
@@ -56,9 +47,9 @@ namespace organizer_application
                                 DueDate = (DateTime)reader["DueDate"],
                                 Priority = reader["Priority"] as string,
                                 Category = reader["Category"] as string,
-                                IsCompleted = (bool)reader["IsCompleted"]
+                                Status = reader["Status"] as string, // Загрузка статуса
                             };
-                            TasksListBox.Items.Add(task);
+                            TasksDataGrid.Items.Add(task);
                         }
                     }
                 }
@@ -68,6 +59,7 @@ namespace organizer_application
                 MessageBox.Show("Ошибка при загрузке задач: " + ex.Message);
             }
         }
+
 
         // Открываем окно добавления задачи
         private void AddTaskButton_Click(object sender, RoutedEventArgs e)
@@ -80,7 +72,7 @@ namespace organizer_application
         // Открываем окно редактирования выбранной задачи
         private void EditTaskButton_Click(object sender, RoutedEventArgs e)
         {
-            if (TasksListBox.SelectedItem is TaskModel selectedTask)
+            if (TasksDataGrid.SelectedItem is TaskModel selectedTask) // Изменено на TasksDataGrid
             {
                 var editWindow = new EditTaskWindow(selectedTask);
                 editWindow.TaskEdited += (s, eArgs) => LoadTasks();
@@ -95,7 +87,7 @@ namespace organizer_application
         // Удаление выбранной задачи
         private void DeleteTaskButton_Click(object sender, RoutedEventArgs e)
         {
-            if (TasksListBox.SelectedItem is TaskModel selectedTask)
+            if (TasksDataGrid.SelectedItem is TaskModel selectedTask) // Изменено на TasksDataGrid
             {
                 var result = MessageBox.Show($"Удалить задачу: \"{selectedTask.Title}\"?", "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)

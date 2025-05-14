@@ -1,5 +1,4 @@
-﻿using Svg.Skia;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -7,21 +6,21 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Reflection;
 using System.Windows.Interop;
-using SkiaSharp;
+using System.Windows.Media.Imaging;
 
 namespace organizer_application.Models
 {
     public class ThemeViewModel : INotifyPropertyChanged
     {
         private ImageSource _currentIcon;
-        private const string LightIconPath = "Images.light_icon.svg";
-        private const string DarkIconPath = "Images.dark_icon.svg";
+        private const string LightIconPath = "Images/Light_mode.png"; // Путь к PNG для светлой темы
+        private const string DarkIconPath = "Images/Dark_mode.png";   // Путь к PNG для темной темы
 
         public ThemeViewModel()
         {
             // Инициализация темы по умолчанию через ThemeManager
             ThemeManager.CurrentThemeUri = ThemeManager.LightThemeUri;
-            CurrentIcon = LoadSvg(LightIconPath);
+            CurrentIcon = LoadPng(LightIconPath);
 
             // Инициализируем ToggleThemeCommand в конструкторе
             ToggleThemeCommand = new RelayCommand(ToggleThemeExecute);
@@ -39,8 +38,7 @@ namespace organizer_application.Models
             }
         }
 
-        // Убираем инициализацию из объявления поля
-        public ICommand ToggleThemeCommand { get; } // Make sure to remove private set
+        public ICommand ToggleThemeCommand { get; }
 
         private void ToggleThemeExecute()
         {
@@ -52,38 +50,42 @@ namespace organizer_application.Models
             if (ThemeManager.CurrentThemeUri == ThemeManager.LightThemeUri)
             {
                 ThemeManager.CurrentThemeUri = ThemeManager.DarkThemeUri;
-                CurrentIcon = LoadSvg(DarkIconPath);
+                CurrentIcon = LoadPng(DarkIconPath);
             }
             else
             {
                 ThemeManager.CurrentThemeUri = ThemeManager.LightThemeUri;
-                CurrentIcon = LoadSvg(LightIconPath);
+                CurrentIcon = LoadPng(LightIconPath);
             }
         }
 
-        private ImageSource LoadSvg(string svgFileName)
+        private ImageSource LoadPng(string pngFileName)
         {
-            // Загрузка SVG-изображения из ресурса
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string resourceName = $"{assembly.GetName().Name}.{svgFileName}";
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            try
             {
-                if (stream == null)
+                // Загрузка PNG-изображения из ресурса
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                string resourceName = $"{assembly.GetName().Name}.{pngFileName.Replace('/', '.')}";
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
                 {
-                    return null; // Или другое изображение по умолчанию
+                    if (stream == null)
+                    {
+                        Console.WriteLine($"Resource not found: {resourceName}");
+                        return null; // Или другое изображение по умолчанию
+                    }
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = stream;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze(); // Замораживаем изображение для потокобезопасности
+                    return bitmapImage;
                 }
-
-                SKSvg svg = new Svg.Skia.SKSvg();
-                svg.Load(stream);
-
-                SKBitmap bitmap = svg.Picture.ToBitmap(SKColors.Transparent, 1.0f, 1.0f, SKColorType.Rgba8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb());
-
-                return Imaging.CreateBitmapSourceFromHBitmap(
-                       bitmap.Handle,
-                       IntPtr.Zero,
-                       Int32Rect.Empty,
-                       System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading PNG: {ex.Message}");
+                return null; // Или другое изображение по умолчанию
             }
         }
 

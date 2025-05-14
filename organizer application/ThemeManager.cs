@@ -23,7 +23,7 @@ namespace organizer_application
                 {
                     _currentThemeUri = value;
                     ApplyTheme(_currentThemeUri);
-                    ThemeChanged?.Invoke(null, EventArgs.Empty); // Уведомляем об изменении
+                    //ThemeChanged?.Invoke(null, EventArgs.Empty); // Уведомляем об изменении
                 }
             }
         }

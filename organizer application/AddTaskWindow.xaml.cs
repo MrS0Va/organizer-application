@@ -65,6 +65,7 @@ namespace organizer_application
             {
                 MessageBox.Show("Ошибка при добавлении задачи: " + ex.Message);
             }
+
         }
     }
 }

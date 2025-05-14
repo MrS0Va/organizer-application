@@ -41,5 +41,6 @@ namespace organizer_application
                 command.ExecuteNonQuery();
             }
         }
+
     }
 }

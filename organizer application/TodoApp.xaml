@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:organizer_application"
         xmlns:conv="clr-namespace:organizer_application.Models"
-            Title="TodoApp" Height="450" Width="800"
+        Title="TodoApp" Height="455" Width="800"
         x:Name="TodoWindow"
         Background="{DynamicResource BackgroundBrush}"
         Foreground="{DynamicResource ForegroundBrush}">
@@ -16,29 +16,31 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListBox x:Name="TasksListBox" Grid.Row="0" Margin="0,0,0,10" SelectionMode="Single">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}"/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <DataGrid x:Name="TasksDataGrid" Grid.Row="0" Margin="0,0,0,10" AutoGenerateColumns="False" SelectionMode="Single"
+          Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource ForegroundBrush}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Задачи" Binding="{Binding Title}" Width="*"/>
+                <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="2*"/>
+                <DataGridTextColumn Header="Дата создания" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="*"/>
+                <DataGridTextColumn Header="Приоритет" Binding="{Binding Priority}" Width="*"/>
+                <DataGridComboBoxColumn Header="Статус" SelectedItemBinding="{Binding Status}" Width="*">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{x:Static local:TaskStatus.Values}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                </DataGridComboBoxColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Добавить задачу" Width="100" Click="AddTaskButton_Click"/>
             <Button Content="Редактировать задачу" Width="130" Click="EditTaskButton_Click"/>
             <Button Content="Удалить задачу" Width="100" Click="DeleteTaskButton_Click"/>
-
-            <Button Content="Сменить тему" Width="104" Command="{Binding ToggleThemeCommand}">
-                <Button.ContentTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding ElementName=TodoWindow, Path=DataContext.CurrentIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
-                            <TextBlock Text="Сменить тему"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </Button.ContentTemplate>
+            <Button Width="25" Height="25" Padding="0" Command="{Binding ToggleThemeCommand}">
+                <Image Source="/Dark_mode.png"/>
             </Button>
-
         </StackPanel>
     </Grid>
 </Window>

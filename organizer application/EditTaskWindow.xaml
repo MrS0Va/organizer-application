@@ -16,7 +16,13 @@
                 <ComboBoxItem Content="Средний" />
                 <ComboBoxItem Content="Низкий" />
             </ComboBox>
-            <Button Content="Сохранить" Click="SaveButton_Click" />
+            <ComboBox x:Name="StatusComboBox">
+                <ComboBoxItem Content="Выполнено" />
+                <ComboBoxItem Content="Невыполнено" />
+                <ComboBoxItem Content="В работе" />
+                <ComboBoxItem Content="Закрыта" />
+            </ComboBox>
+            <Button Content="Сохранить" Click="SaveAndChangeStatusButton_Click" />
         </StackPanel>
     </Grid>
 </Window>
