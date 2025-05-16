@@ -25,6 +25,11 @@ namespace organizer_application
             InitializeComponent();
         }
 
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close(); // Просто закрывает окно
+        }
+
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TitleTextBox.Text) || DueDatePicker.SelectedDate == null)
@@ -33,13 +38,24 @@ namespace organizer_application
                 return;
             }
 
+            TimeSpan reminderOffset = TimeSpan.FromMinutes(10); // по умолчанию
+            if (ReminderComboBox.SelectedItem is ComboBoxItem selectedItem && selectedItem.Tag != null)
+            {
+                if (TimeSpan.TryParse(selectedItem.Tag.ToString(), out TimeSpan parsed))
+                {
+                    reminderOffset = parsed;
+                }
+            }
+
+
             TaskModel newTask = new TaskModel
             {
                 Title = TitleTextBox.Text,
                 Description = DescriptionTextBox.Text,
                 DueDate = DueDatePicker.SelectedDate.Value,
                 Priority = (PriorityComboBox.SelectedItem as ComboBoxItem)?.Content.ToString(),
-                Category = null // Если у вас есть поле для категории, добавьте его
+                Category = null, // при необходимости добавьте
+                ReminderOffset = reminderOffset
             };
 
             try
@@ -47,15 +63,17 @@ namespace organizer_application
                 using (SqlConnection connection = DataBaseConnect.GetConnection())
                 {
                     connection.Open();
-                    SqlCommand command = new SqlCommand(
-                        "INSERT INTO Tasks (Title, Description, DueDate, Priority, Category) VALUES (@Title, @Description, @DueDate, @Priority, @Category)",
+                    SqlCommand cmd = new SqlCommand(
+                        "INSERT INTO Tasks (Title, Description, DueDate, Priority, Category, UserId, Status) VALUES (@Title, @Description, @DueDate, @Priority, @Category, @UserId, @Status)",
                         connection);
-                    command.Parameters.AddWithValue("@Title", newTask.Title);
-                    command.Parameters.AddWithValue("@Description", (object)newTask.Description ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@DueDate", newTask.DueDate);
-                    command.Parameters.AddWithValue("@Priority", newTask.Priority);
-                    command.Parameters.AddWithValue("@Category", (object)newTask.Category ?? DBNull.Value);
-                    command.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("@Title", newTask.Title);
+                    cmd.Parameters.AddWithValue("@Description", (object)newTask.Description ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@DueDate", newTask.DueDate);
+                    cmd.Parameters.AddWithValue("@Priority", newTask.Priority);
+                    cmd.Parameters.AddWithValue("@Category", (object)newTask.Category ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@UserId", Session.CurrentUser.Id);
+                    cmd.Parameters.AddWithValue("@Status", newTask.Status ?? "Невыполнено");
+                    cmd.ExecuteNonQuery();
                 }
 
                 TaskAdded?.Invoke(this, newTask);

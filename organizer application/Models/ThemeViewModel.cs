@@ -14,13 +14,13 @@ namespace organizer_application.Models
     {
         private ImageSource _currentIcon;
         private const string LightIconPath = "Images/Light_mode.png"; // Путь к PNG для светлой темы
-        private const string DarkIconPath = "Images/Dark_mode.png";   // Путь к PNG для темной темы
+        private const string DarkIconPath = "/Dark_mode.png";   // Путь к PNG для темной темы
 
         public ThemeViewModel()
         {
             // Инициализация темы по умолчанию через ThemeManager
-            ThemeManager.CurrentThemeUri = ThemeManager.LightThemeUri;
-            CurrentIcon = LoadPng(LightIconPath);
+            ThemeManager.CurrentThemeUri = ThemeManager.DarkThemeUri;
+            CurrentIcon = LoadPng(DarkIconPath);
 
             // Инициализируем ToggleThemeCommand в конструкторе
             ToggleThemeCommand = new RelayCommand(ToggleThemeExecute);

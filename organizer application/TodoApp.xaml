@@ -5,41 +5,139 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:organizer_application"
         xmlns:conv="clr-namespace:organizer_application.Models"
-        Title="TodoApp" Height="455" Width="800"
+        Title="TodoApp" Height="500" Width="900"
         x:Name="TodoWindow"
-        Background="{DynamicResource BackgroundBrush}"
-        Foreground="{DynamicResource ForegroundBrush}">
+        Background="#FAFAFA"
+        Foreground="#333"
+        FontFamily="Segoe UI" FontSize="14">
 
-    <Grid Margin="10">
+    <Window.Resources>
+        <!-- Стиль для кнопок -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45A049"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Стиль для DataGrid -->
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="AlternatingRowBackground" Value="#F0F0F0"/>
+            <Setter Property="RowHeight" Value="35"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="ColumnHeaderStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#E0E0E0"/>
+                        <Setter Property="Foreground" Value="#333"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="Padding" Value="8,4"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="#CCC"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TaskCellStyle" TargetType="DataGridCell">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                    <!-- Меняем цвет текста -->
+                    <Setter Property="Foreground" Value="DarkGreen"/>
+                    <!-- Важное: установить TextDecorations у TextBlock внутри ячейки -->
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridCell">
+                                <Border Background="{TemplateBinding Background}">
+                                    <TextBlock Text="{Binding Path=Content.Text, RelativeSource={RelativeSource Self}}"
+                                           TextDecorations="Strikethrough"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    
+    
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DataGrid x:Name="TasksDataGrid" Grid.Row="0" Margin="0,0,0,10" AutoGenerateColumns="False" SelectionMode="Single"
-          Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource ForegroundBrush}">
+        <!-- Основной DataGrid с современным стилем -->
+        <DataGrid x:Name="TasksDataGrid" Grid.Row="0" AutoGenerateColumns="False" 
+          ItemsSource="{Binding Tasks}"
+          Style="{StaticResource ModernDataGridStyle}">
+            <DataGrid.Resources>
+                <Style x:Key="TaskRowStyle" TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                            <Setter Property="TextBlock.TextDecorations" Value="Strikethrough"/>
+                            <Setter Property="Foreground" Value="DarkGreen"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <StaticResource ResourceKey="TaskRowStyle"/>
+            </DataGrid.RowStyle>
+
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Задачи" Binding="{Binding Title}" Width="*"/>
-                <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="2*"/>
-                <DataGridTextColumn Header="Дата создания" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="*"/>
-                <DataGridTextColumn Header="Приоритет" Binding="{Binding Priority}" Width="*"/>
-                <DataGridComboBoxColumn Header="Статус" SelectedItemBinding="{Binding Status}" Width="*">
+
+                <!-- Остальные колонки -->
+                <DataGridTextColumn Header="Задачи" Binding="{Binding Title}" Width="*"
+                    CellStyle="{StaticResource TaskCellStyle}"/>
+                <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="2*"
+                    CellStyle="{StaticResource TaskCellStyle}"/>
+                <DataGridTextColumn Header="Дата выполнения" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="*"
+                    CellStyle="{StaticResource TaskCellStyle}"/>
+                <DataGridTextColumn Header="Приоритет" Binding="{Binding Priority}" Width="*"
+                    CellStyle="{StaticResource TaskCellStyle}"/>
+                <DataGridComboBoxColumn Header="Статус" SelectedItemBinding="{Binding Status}" Width="*"
+                        CellStyle="{StaticResource TaskCellStyle}">
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{x:Static local:TaskStatus.Values}"/>
                         </Style>
                     </DataGridComboBoxColumn.ElementStyle>
-                </DataGridComboBoxColumn>
+                    </DataGridComboBoxColumn>
             </DataGrid.Columns>
         </DataGrid>
 
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Добавить задачу" Width="100" Click="AddTaskButton_Click"/>
-            <Button Content="Редактировать задачу" Width="130" Click="EditTaskButton_Click"/>
-            <Button Content="Удалить задачу" Width="100" Click="DeleteTaskButton_Click"/>
-            <Button Width="25" Height="25" Padding="0" Command="{Binding ToggleThemeCommand}">
-                <Image Source="/Dark_mode.png"/>
+        <!-- Панель кнопок с более современным дизайном -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0" Width="570">
+            <Button Content="Выполнить" Width="100" Style="{StaticResource ModernButtonStyle}" Click="CompleteTaskButton_Click"/>
+            <Button Content="Добавить задачу" Width="140" Style="{StaticResource ModernButtonStyle}" Click="AddTaskButton_Click"/>
+            <Button Content="Редактировать задачу" Width="150" Style="{StaticResource ModernButtonStyle}" Click="EditTaskButton_Click"/>
+            <Button Content="Удалить задачу" Width="140" Style="{StaticResource ModernButtonStyle}" Click="DeleteTaskButton_Click"/>
+            <!-- Иконка для темы -->
+            <Button Width="40" Height="40" Margin="10,0,0,0" Style="{StaticResource ModernButtonStyle}" Visibility="Hidden">
+                <Image Source="/Dark_mode.png" Width="20" Height="20"/>
             </Button>
         </StackPanel>
     </Grid>

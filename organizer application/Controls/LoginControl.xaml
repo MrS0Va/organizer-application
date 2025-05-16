@@ -1,14 +1,70 @@
 ﻿<UserControl x:Class="organizer_application.Controls.LoginControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Background="#2E2E2E">
-        <StackPanel Margin="20">
-            <TextBlock Text="Login" FontSize="24" Foreground="White" Margin="0,0,0,20" />
-            <TextBox x:Name="UsernameTextBox" Text="Username" Margin="0,0,0,10" />
-            <PasswordBox x:Name="PasswordBox" Password="Password" Margin="0,0,0,20" />
-            <Button Content="Login" Click="LoginButton_Click" Background="#3A3A3A" Foreground="White" />
-            <TextBlock Text="Don't have an account? Click Register" Foreground="LightGray" Margin="0,20,0,0" 
-                       TextAlignment="Center" MouseDown="RegisterTextBlock_MouseDown" />
-        </StackPanel>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="350">
+    <Grid Background="#1E1E1E">
+        <!-- Центрируем содержимое -->
+        <Border Padding="30" CornerRadius="15" Background="#2C2C2C" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Effect="{DynamicResource DropShadow}">
+            <StackPanel Width="300" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Заголовок -->
+                <TextBlock Text="Авторизация" FontSize="28" FontWeight="Bold" Foreground="#FFFFFF" 
+                           TextAlignment="Center" Margin="0,0,0,20"/>
+
+                <!-- Поле логина -->
+                <StackPanel>
+                    <TextBlock Text="Логин" FontSize="14" Foreground="#CCCCCC" Margin="10,0,0,5"/>
+                    <TextBox x:Name="UsernameTextBox" Height="40" Padding="10" 
+                             Background="#3A3A3A" Foreground="#FFFFFF" BorderThickness="0" 
+                           FontSize="14" />
+                </StackPanel>
+
+                <!-- Поле пароля -->
+                <StackPanel>
+                    <TextBlock Text="Пароль" FontSize="14" Foreground="#CCCCCC" Margin="10,10,0,5"/>
+                    <PasswordBox x:Name="PasswordBox" Height="40" Padding="10" 
+                                 Background="#3A3A3A" Foreground="#FFFFFF" BorderThickness="0" 
+                                  FontSize="14" />
+                </StackPanel>
+
+                <!-- Кнопка входа -->
+                <Button Content="Войти" Height="45" Background="#4A90E2" Foreground="White" 
+                        FontSize="16" FontWeight="SemiBold" BorderThickness="0" 
+                         Margin="0,20,0,0" Cursor="Hand" 
+                        Click="LoginButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#4A90E2"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="8" 
+                                                Padding="10" 
+                                                BorderThickness="0">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#357ABD"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Регистрация -->
+                <TextBlock Text="Нет учетной записи? «Зарегистрироваться»" Foreground="#66B2FF" 
+                           TextAlignment="Center" Margin="0,20,0,0" Cursor="Hand" FontSize="14"
+                           MouseDown="RegisterTextBlock_MouseDown"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

@@ -29,6 +29,11 @@ namespace organizer_application
                 .FirstOrDefault(item => item.Content.ToString() == _task.Status); // Предполагается, что у TaskModel есть свойство Status
         }
 
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close(); // Просто закрывает окно
+        }
+
         private void SaveAndChangeStatusButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TitleTextBox.Text) || DueDatePicker.SelectedDate == null)

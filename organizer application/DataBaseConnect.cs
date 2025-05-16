@@ -1,4 +1,5 @@
-﻿using System;
+﻿using organizer_application.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -29,6 +30,30 @@ namespace organizer_application
                 return count > 0; // Если есть хотя бы одна запись, значит, пользователь найден
             }
         }
+
+        public static UserModel GetUserByUsername(string username)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand("SELECT Id, Username, CreatedAt FROM Users WHERE Username = @Username", connection);
+                cmd.Parameters.AddWithValue("@Username", username);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new UserModel
+                        {
+                            Id = (int)reader["Id"],
+                            Username = reader["Username"] as string,
+                            CreatedAt = (DateTime)reader["CreatedAt"]
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
         public static void RegisterUser(string username, string password)
         {
             string passwordHash = PasswdHelper.HashPassword(password);

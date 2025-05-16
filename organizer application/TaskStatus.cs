@@ -2,6 +2,6 @@
 {
     public static class TaskStatus
     {
-        public static readonly string[] Values = { "Выполнено", "Невыполнено", "В работе", "Закрыта" };
+        public static readonly string[] Values = { "Выполнена", "Невыполнено", "В работе", "Закрыта" };
     }
 }
